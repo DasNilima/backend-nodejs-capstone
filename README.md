@@ -1,1 +1,5 @@
-# coding-project-template
+# Project overview
+As a back-end developer in the Second Chance project, your primary focus will be on developing and enhancing the application's back-end services. The basic skeleton structure of Second Chance's backend is in place but requires further development to ensure it is robust, secure, and scalable. Your responsibilities include refining these services, implementing new features, and ensuring seamless integration with existing or future front-end interfaces. The backend will handle all the business logic, database interactions, authentication, and server-side data processing. The first step in this development journey is to translate the project requirements into actionable user stories that guide the backend development efforts.
+
+# User Stories
+In this lab, you will build a sprint plan for the project. User stories are a fundamental component in Agile methodologies, serving as a simple yet powerful tool for understanding user requirements. They are typically written from a user's perspective and focus on what they need from the system to achieve a specific goal. A well-crafted user story is concise and focuses on a single functionality or feature, helping to break down complex projects into manageable work units. In this lab, you'll have the opportunity to apply these principles to create and refine user stories.
