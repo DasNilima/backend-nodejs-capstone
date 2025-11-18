@@ -11,57 +11,53 @@ const directoryPath = 'public/images';
 
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+destination: function (req, file, cb) {
     cb(null, directoryPath); // Specify the upload directory
-  },
-  filename: function (req, file, cb) {
+},
+filename: function (req, file, cb) {
     cb(null, file.originalname); // Use the original file name
-  },
+},
 });
 
 const upload = multer({ storage: storage });
 
 
-// Get all secondChanceItems --> Step 2: Implement the /api/secondchance/items GET endpoint
+// Get all secondChanceItems --> Implement the /api/secondchance/items GET endpoint
 router.get('/', async (req, res, next) => {
-    logger.info('/ called');
     try {
-        //Step 2: task 1 - insert code here - Connect to MongoDB
+        //Connect to MongoDB
         const db = await connectToDatabase();
-        //Step 2: task 2 - insert code here -  use the collection() method to retrieve the secondChanceItems collection
+        // use the collection() method to retrieve the secondChanceItems collection
         const collection = db.collection("secondChanceItems");
-        //Step 2: task 3 - insert code here Fetch all secondChanceItems
+        // Fetch all secondChanceItems
         const secondChanceItems = await collection.find({}).toArray();
-        //Step 2: task 4 - insert code here Return secondChanceItems
-        return res.json(secondChanceItems);
+        // Return secondChanceItems
+        res.json(secondChanceItems);
     } catch (e) {
         logger.error('oops something went wrong', e)
         next(e);
     }
 });
 
-// Add a new item --> Step 3: Implement the /api/secondchance/items POST endpoint - Task 7: Upload the image to the images directory
-router.post('/',  upload.single('file'), async(req, res,next) => {
-    try {
 
-        //Step 3: task 1 - insert code here - Task 1: Connect to MongoDB
-        const db = await connectToDatabase();
-        //Step 3: task 2 - insert code here - Task 2: Use the collection() method to retrieve the secondChanceItems collection
-        const collection = db.collection("secondChanceItems");
-        //Step 3: task 3 - insert code here - Task 3: Create a new secondChanceItem from the request body
-        let secondChanceItem = req.body;
-        //Task 4: Get the last id, increment it by 1, and set it to the new secondChanceItem
-        const lastItemQuery = await collection.find().sort({'id': -1}).limit(1);
-await lastItemQuery.forEach(item => {
-    secondChanceItem.id = (parseInt(item.id) + 1).toString();
-});
-        //Step 3: task 4 - insert code here - Task 5: Set the current date to the new item
-        const date_added = Math.floor(new Date().getTime() / 1000);
+
+// Add a new item
+router.post('/', upload.single('file'), async(req, res,next) => {
+    try {
+        const db = await connectToDatabase(); //Connect to MongoDB
+        const collection = db.collection("secondChanceItems"); //Use the collection() method to retrieve the secondChanceItems collection
+        const lastItemQuery = await collection.find().sort({'id': -1}).limit(1); //Get the last id, increment it by 1, and set it to the new secondChanceItem
+        let secondChanceItem = req.body; //Create a new secondChanceItem from the request body
+
+        await lastItemQuery.forEach(item => {
+            secondChanceItem.id = (parseInt(item.id) + 1).toString();
+        });
+        const date_added = Math.floor(new Date().getTime() / 1000); //Set the current date to the new item
         secondChanceItem.date_added = date_added
-        //Task 6: Add the secondChanceItem to the database
-        secondChanceItem = await collection.insertOne(secondChanceItem);
-        //Step 3: task 5 - insert code here
-        res.status(201).json(secondChanceItem.ops[0]);
+
+        secondChanceItem = await collection.insertOne(secondChanceItem); //Add the secondChanceItem to the database
+        console.log(secondChanceItem);
+        res.status(201).json(secondChanceItem);
     } catch (e) {
         next(e);
     }
@@ -72,14 +68,14 @@ await lastItemQuery.forEach(item => {
 router.get('/:id', async (req, res, next) => {
 
     try {
-        //Step 4: task 1 - insert code here -Task 1: Connect to MongoDB
+        // Connect to MongoDB
         const db = await connectToDatabase();
-        //Step 4: task 2 - insert code here - Task 2: Access the MongoDB collection
+        //Access the MongoDB collection
         const collection = db.collection("secondChanceItems");
         const id = req.params.id; 
-        //Step 4: task 3 - insert code here - Find a specific secondChanceItem by ID
+        //Find a specific secondChanceItem by ID
         const secondChanceItem = await collection.findOne({ id: id });
-        //Step 4: task 4 - insert code here - Return the secondChanceItem as a JSON object. Return an error message if the item is not found.
+        // Return the secondChanceItem as a JSON object. Return an error message if the item is not found.
         if (!secondChanceItem) {
         return res.status(404).send("secondChanceItem not found");
 }
@@ -90,20 +86,21 @@ res.json(secondChanceItem);
     }
 });
 
-// Update and existing item --> Step 5: Implement the /api/secondchance/items/:id UPDATE endpoint
+
+
+// Update and existing item
 router.put('/:id', async(req, res,next) => {
     try {
-        //Step 5: task 1 - insert code here - Task 1: Connect to MongoDB
         const db = await connectToDatabase();
-        //Step 5: task 2 - insert code here -Task 2: Use the collection() method to retrieve the secondChanceItems collection
-        const collection = db.collection("secondChanceItems");
-        //Step 5: task 3 - insert code here - Task 3: Check if the secondChanceItem exists and send an appropriate message if it doesn't exist
-        const secondChanceItem = await collection.findOne({ id });
-if (!secondChanceItem) {
-        logger.error('secondChanceItem not found');
-        return res.status(404).json({ error: "secondChanceItem not found" });
-}
-        //Step 5: task 4 - insert code here -Task 4: Update the item's specific attributes.
+        const collection = db.collection("secondChanceItems"); ////Use the collection() method to retrieve the secondChanceItems collection
+        const id = req.params.id;
+        const secondChanceItem = await collection.findOne({ id }); 
+        //Check if the secondChanceItem exists and send an appropriate message if it doesn't exist
+        if (!secondChanceItem) {
+            logger.error('secondChanceItem not found');
+            return res.status(404).json({ error: "secondChanceItem not found" });
+        }
+        //Update the item's specific attributes.
         secondChanceItem.category = req.body.category;
         secondChanceItem.condition = req.body.condition;
         secondChanceItem.age_days = req.body.age_days;
@@ -116,32 +113,34 @@ if (!secondChanceItem) {
             { $set: secondChanceItem },
             { returnDocument: 'after' }
         );
-        //Step 5: task 5 - insert code here --> Task 5: Send confirmation
-                if(updatepreloveItem) {
+
+
+        if(updatepreloveItem) {
             res.json({"uploaded":"success"});
         } else {
             res.json({"uploaded":"failed"});
         }
+
     } catch (e) {
         next(e);
     }
 });
 
-// Delete an existing item -- Step 6: Implement the /api/secondchance/items/:id DELETE endpoint
+
+// Delete an existing item
 router.delete('/:id', async(req, res,next) => {
     try {
-        //Step 6: task 1 - insert code here - Task 1: Connect to MongoDB
         const db = await connectToDatabase();
-        //Step 6: task 2 - insert code here - Task 2: Access the MongoDB collection
         const collection = db.collection("secondChanceItems");
-        //Step 6: task 3 - insert code here - Task 3: Find a specific secondChanceItem by ID using the collection.fineOne() method and send an appropriate message if it doesn't exist
-        const secondChanceItem = await collection.findOne({ id });
-if (!secondChanceItem) {
-    logger.error('secondChanceItem not found');
-    return res.status(404).json({ error: "secondChanceItem not found" });
-}
-        //Step 6: task 4 - insert code here - Task 4: Delete the object and send an appropriate message
-        await collection.deleteOne({ id });
+        const id = req.params.id;
+        const secondChanceItem = await collection.findOne({ id }); //Find a specific secondChanceItem by ID using the collection.fineOne() method and send an appropriate message if it doesn't exist
+
+        if (!secondChanceItem) {
+            logger.error('secondChanceItem not found');
+            return res.status(404).json({ error: "secondChanceItem not found" });
+        }
+        const updatepreloveItem = await collection.deleteOne({ id }); //Delete the object and send an appropriate message
+
         res.json({"deleted":"success"});
     } catch (e) {
         next(e);
