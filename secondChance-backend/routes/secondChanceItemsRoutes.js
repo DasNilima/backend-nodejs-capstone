@@ -1,7 +1,5 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const router = express.Router();
 const connectToDatabase = require('../models/db');
 const logger = require('../logger');
@@ -140,8 +138,12 @@ router.delete('/:id', async(req, res,next) => {
             return res.status(404).json({ error: "secondChanceItem not found" });
         }
         const updatepreloveItem = await collection.deleteOne({ id }); //Delete the object and send an appropriate message
-
-        res.json({"deleted":"success"});
+        if (updatepreloveItem) {
+            res.json({"deleted":"success"});
+        } else {
+            res.json({"deleted":"failed"});
+        }
+        
     } catch (e) {
         next(e);
     }
