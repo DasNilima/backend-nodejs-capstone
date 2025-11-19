@@ -22,6 +22,8 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
-  camelcase: ["error", { allow: ["date_added"] }]
-}
+    camelcase: ["error", {
+      allow: ["date_added", "age_years", "age_days"]
+    }]
+  }
 }

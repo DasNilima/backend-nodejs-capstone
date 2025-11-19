@@ -4,7 +4,9 @@
   "description": "As a back-end developer in the Second Chance project, your primary focus will be on developing and enhancing the application's back-end services. The basic skeleton structure of Second Chance's backend is in place but requires further development to ensure it is robust, secure, and scalable. Your responsibilities include refining these services, implementing new features, and ensuring seamless integration with existing or future front-end interfaces. The backend will handle all the business logic, database interactions, authentication, and server-side data processing. The first step in this development journey is to translate the project requirements into actionable user stories that guide the backend development efforts.",
   "main": ".eslintrc.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo 'No tests yet' && exit 0",
+    "prepare": "husky",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -15,5 +17,14 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.6.0"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix"
+    ]
   }
 }
